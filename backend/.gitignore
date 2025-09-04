@@ -1,5 +1,7 @@
 venv/
 app/__pycache__/
 app/tools/__pycache__/
+app/routers/__pycache__/
 upload/
 output/
+database.db
