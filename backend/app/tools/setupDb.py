@@ -21,7 +21,7 @@ def setupDatabase():
             CREATE TABLE images (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 userId INTEGER NOT NULL REFERENCES users(id),
-                imagePath TEXT NOT NULL,
+                imagePath TEXT,
                 resultPath TEXT
             );
         """

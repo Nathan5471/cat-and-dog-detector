@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from tools.setupDb import setupDatabase
 from routers import images, users
 
-load_dotenv()
+load_dotenv(dotenv_path="backend/.env")
 
 setupDatabase()
 

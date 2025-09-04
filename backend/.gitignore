@@ -6,3 +6,4 @@ app/dependencies/__pycache__
 upload/
 output/
 database.db
+.env

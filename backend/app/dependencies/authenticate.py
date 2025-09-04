@@ -1,4 +1,4 @@
-from fastapi import Request, HTTPException, status
+from fastapi import Cookie, HTTPException, status
 import jwt
 import sqlite3
 import os
@@ -6,8 +6,7 @@ import os
 dbPath = "backend/app/database.db"
 
 
-def authenticate(request: Request):
-    token = request.cookies.get("token")
+def authenticate(token: str = Cookie(None)):
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token"
@@ -21,7 +20,7 @@ def authenticate(request: Request):
             )
         connection = sqlite3.connect(dbPath)
         cursor = connection.cursor()
-        user = cursor.execute("SELECT * FROM user WHERE id = ?", (id,)).fetchone()
+        user = cursor.execute("SELECT * FROM users WHERE id = ?", (id,)).fetchone()
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
@@ -31,7 +30,8 @@ def authenticate(request: Request):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Token verification failed"
         )
-    except:
+    except Exception as e:
+        print("Error:", e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error",
