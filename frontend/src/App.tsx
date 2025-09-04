@@ -1,5 +1,13 @@
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 function App() {
-  return <p className="text-2xl text-red-500">Hello World</p>;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<div>Home Page</div>} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
