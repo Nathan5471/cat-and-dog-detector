@@ -112,7 +112,7 @@ async def getResult(imageId: str, user: tuple = Depends(authenticate)):
     return FileResponse(image[3])
 
 
-@router.get("/images")
+@router.get("/user-images")
 async def userImages(user: tuple = Depends(authenticate)):
     connection = sqlite3.connect(dbPath)
     cursor = connection.cursor()
