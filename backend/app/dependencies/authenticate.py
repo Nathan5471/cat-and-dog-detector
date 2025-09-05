@@ -21,6 +21,7 @@ def authenticate(token: str = Cookie(None)):
         connection = sqlite3.connect(dbPath)
         cursor = connection.cursor()
         user = cursor.execute("SELECT * FROM users WHERE id = ?", (id,)).fetchone()
+        connection.close()
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found"

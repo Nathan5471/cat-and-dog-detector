@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Depends
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from ultralytics import YOLO
 from dependencies.authenticate import authenticate
 from tools.runModel import runModel
@@ -51,17 +51,74 @@ async def detectImage(imageId: str, user: tuple = Depends(authenticate)):
     cursor = connection.cursor()
     image = cursor.execute("SELECT * FROM images WHERE id = ?", (imageId)).fetchone()
     if not image:
+        connection.close()
+        return JSONResponse(status_code=404, content={"error": "Image not found"})
+    if image[1] != user[0]:
+        connection.close()
+        return JSONResponse(
+            status_code=403, content={"error": "Not authorized to access this image"}
+        )
+    if image[3]:
+        connection.close()
+        return JSONResponse(
+            status_code=200, content={"message": "Image already processed"}
+        )
+    imagePath = image[2]
+    runModel(model, imagePath, str(image[1]))
+    outputPath = f"backend/app/output/{user[0]}/{imageId}.jpg"
+    cursor.execute(
+        "UPDATE images SET resultPath = ? WHERE id = ?", (outputPath, imageId)
+    )
+    connection.commit()
+    connection.close()
+    return JSONResponse(status_code=200, content={"message": "Success"})
+
+
+@router.get("/image/{imageId}")
+async def getImage(imageId: str, user: tuple = Depends(authenticate)):
+    connection = sqlite3.connect(dbPath)
+    cursor = connection.cursor()
+    image = cursor.execute("SELECT * FROM images WHERE id = ?", (imageId,)).fetchone()
+    connection.close()
+    if not image:
         return JSONResponse(status_code=404, content={"error": "Image not found"})
     if image[1] != user[0]:
         return JSONResponse(
             status_code=403, content={"error": "Not authorized to access this image"}
         )
-    if image[3]:
-        return JSONResponse(status_code=200, content={"outputPath": image[3]})
-    imagePath = image[2]
-    results = runModel(model, imagePath, str(image[1]))
-    outputPath = results.save_dir
-    cursor.execute(
-        "UPDATE images SET resultPath = ? WHERE id = ?", (outputPath, imageId)
-    )
-    return JSONResponse(status_code=200, content={"results": "TESTing"})
+    if not image[2]:
+        return JSONResponse(
+            status_code=404, content={"error": "Image doesn't have path set"}
+        )
+    return FileResponse(image[2])
+
+
+@router.get("/result/{imageId}")
+async def getResult(imageId: str, user: tuple = Depends(authenticate)):
+    connection = sqlite3.connect(dbPath)
+    cursor = connection.cursor()
+    image = cursor.execute("SELECT * FROM images WHERE id = ?", (imageId,)).fetchone()
+    connection.close()
+    if not image:
+        return JSONResponse(status_code=404, content={"error": "Image not found"})
+    if image[1] != user[0]:
+        return JSONResponse(
+            status_code=403, content={"error": "Not authorized to access this image"}
+        )
+    if not image[3]:
+        return JSONResponse(
+            status_code=404, content={"error": "Image hasn't been processed yet"}
+        )
+    return FileResponse(image[3])
+
+
+@router.get("/images")
+async def userImages(user: tuple = Depends(authenticate)):
+    connection = sqlite3.connect(dbPath)
+    cursor = connection.cursor()
+    images = cursor.execute(
+        "SELECT id FROM images WHERE userId = ?", (user[0],)
+    ).fetchall()
+    connection.close()
+    imageIds = [image[0] for image in images]
+    return JSONResponse(status_code=200, content={"imageIds": imageIds})
