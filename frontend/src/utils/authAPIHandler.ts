@@ -10,21 +10,23 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     return Promise.reject(
-      error.response ? error.response.data : "Network Error"
+      error.response ? error.response.data : { message: "Network Error" }
     );
   }
 );
 
 export const register = async (username: string, password: string) => {
   const response = await api.post("/register", {
-    params: { username, password },
+    username,
+    password,
   });
   return response.data;
 };
 
 export const login = async (username: string, password: string) => {
   const response = await api.post("/login", {
-    params: { username, password },
+    username,
+    password,
   });
   return response.data;
 };
@@ -35,6 +37,6 @@ export const logoutUser = async () => {
 };
 
 export const getSelf = async () => {
-  const response = await api.post("/self");
+  const response = await api.get("/self");
   return response.data;
 };

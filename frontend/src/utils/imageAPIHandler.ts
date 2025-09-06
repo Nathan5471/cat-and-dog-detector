@@ -10,7 +10,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     return Promise.reject(
-      error.response ? error.response.data : "Network Error"
+      error.response ? error.response.data : { message: "Network Error" }
     );
   }
 );

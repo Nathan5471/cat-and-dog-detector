@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from bcrypt import hashpw, gensalt, checkpw
 from datetime import datetime, timedelta
@@ -12,8 +12,14 @@ dbPath = "backend/app/database.db"
 router = APIRouter()
 
 
+# Remeber to switch to pydantic for using the body
+
+
 @router.post("/register")
-async def registerUser(username: str, password: str):
+async def registerUser(request: Request):
+    body = await request.json()
+    username = body.get("username")
+    password = body.get("password")
     connection = sqlite3.connect(dbPath)
     cursor = connection.cursor()
     userExists = cursor.execute(
@@ -37,7 +43,10 @@ async def registerUser(username: str, password: str):
 
 
 @router.post("/login")
-async def loginUser(username: str, password: str):
+async def loginUser(request: Request):
+    body = await request.json()
+    username = body.get("username")
+    password = body.get("password")
     connection = sqlite3.connect(dbPath)
     cursor = connection.cursor()
     user = cursor.execute(
