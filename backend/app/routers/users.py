@@ -69,6 +69,12 @@ async def loginUser(username: str, password: str):
     return response
 
 
+@router.post("/logout")
+async def logoutUser():
+    response = JSONResponse(status_code=200, content={"message": "Logout successful"})
+    response.delete_cookie(key="token")
+
+
 @router.get("/self")
 async def getCurrentUser(user: object = Depends(authenticate)):
     return JSONResponse(status_code=200, content={"id": user[0], "username": user[1]})

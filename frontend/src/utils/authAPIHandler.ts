@@ -29,6 +29,11 @@ export const login = async (username: string, password: string) => {
   return response.data;
 };
 
+export const logoutUser = async () => {
+  const response = await api.post("/logout");
+  return response.data;
+};
+
 export const getSelf = async () => {
   const response = await api.post("/self");
   return response.data;
