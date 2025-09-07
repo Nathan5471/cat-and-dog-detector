@@ -28,7 +28,7 @@ export default function Register() {
   };
 
   return (
-    <div className="h-screen w-screen bg-gray-800 flex flex-col justify-center items-center text-white">
+    <div className="min-h-screen w-screen bg-gray-800 flex flex-col justify-center items-center text-white">
       <form
         className="w-[calc(95%)] md:w-[calc(60%)] lg:w-[calc(30%)] bg-gray-700 flex flex-col rounded-lg shadow-md p-3"
         onSubmit={handleRegister}

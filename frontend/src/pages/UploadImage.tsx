@@ -58,10 +58,13 @@ export default function UploadImage() {
   };
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-gray-800 text-white">
+    <div className="flex flex-col w-screen min-h-screen bg-gray-800 text-white">
       <NavBar />
       <div className="flex flex-col w-screen h-full items-center justify-center">
-        <form onSubmit={handleUploadImage} className="w-1/2">
+        <form
+          onSubmit={handleUploadImage}
+          className="w-11/12 mt-2 mb-2 sm:w-3/4 md:w-2/3 lg:w-1/2"
+        >
           <input
             type="file"
             accept="image/*"

@@ -71,17 +71,17 @@ export default function Image() {
   }
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-gray-800 text-white">
+    <div className="flex flex-col w-screen min-h-screen bg-gray-800 text-white">
       <NavBar />
-      <div className="flex flex-row w-screen h-[calc(100%-56px)]">
-        <div className="flex w-2/3 h-full items-center justify-center">
+      <div className="flex flex-col md:flex-row w-screen md:h-[calc(100vh-56px)] mt-2 mb-2">
+        <div className="flex w-full md:w-2/3 h-full items-center justify-center">
           <img
             src={imageUrl}
             alt={imageName}
-            className="w-[calc(100%-100px)] h-[calc(100%-100px)]"
+            className="w-3/4 aspect-[1] md:w-[calc(100%-100px)] md:h-[calc(100%-100px)]"
           />
         </div>
-        <div className="flex flex-col w-1/3 h-full text-center items-center">
+        <div className="flex flex-col w-full md:w-1/3 h-full text-center items-center">
           <h1 className="text-4xl font-bold mt-8">{imageName}</h1>
           {detect ? (
             <button

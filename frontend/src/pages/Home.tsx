@@ -38,7 +38,7 @@ export default function Home() {
       <NavBar />
       <div className="flex flex-col w-screen h-full items-center justify-center">
         <h1 className="text-3xl font-bold ml-2 mt-2">Your images</h1>
-        <div className="grid grid-cols-4 gap-4 m-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 m-3">
           {images.map((image: { id: string; name: string }) => {
             return <ImageCard key={image.id} image={image} />;
           })}
