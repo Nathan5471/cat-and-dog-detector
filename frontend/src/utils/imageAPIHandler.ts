@@ -21,13 +21,11 @@ export const uploadImage = async (formData: FormData) => {
 };
 
 export const detectImage = async (imageId: string) => {
-  const response = await api.post("/detect", {
-    params: { imageId },
-  });
+  const response = await api.post(`/detect/${imageId}`);
   return response.data;
 };
 
-export const getUserImageIds = async () => {
+export const getUserImages = async () => {
   const response = await api.get("/user-images");
   return response.data;
 };

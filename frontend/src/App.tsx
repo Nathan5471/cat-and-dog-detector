@@ -4,6 +4,7 @@ import AuthenticatedRoute from "./utils/AuthenticatedRoute";
 import { useAuth } from "./contexts/AuthContext";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
+import Home from "./pages/Home.tsx";
 
 function App() {
   const { user, getUser } = useAuth();
@@ -18,7 +19,7 @@ function App() {
     <Router>
       <Routes>
         <Route element={<AuthenticatedRoute />}>
-          <Route path="/" element={<div>Home Page</div>} />
+          <Route path="/" element={<Home />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

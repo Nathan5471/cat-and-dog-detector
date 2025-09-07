@@ -30,7 +30,7 @@ export default function Register() {
   return (
     <div className="h-screen w-screen bg-gray-800 flex flex-col justify-center items-center text-white">
       <form
-        className="w-[calc(30%)] bg-gray-700 flex flex-col rounded-lg shadow-md p-3"
+        className="w-[calc(95%)] md:w-[calc(60%)] lg:w-[calc(30%)] bg-gray-700 flex flex-col rounded-lg shadow-md p-3"
         onSubmit={handleRegister}
       >
         <h1 className="text-3xl font-bold text-center">Reigster</h1>

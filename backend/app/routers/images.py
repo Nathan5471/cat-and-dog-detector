@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Depends
 from fastapi.responses import JSONResponse, FileResponse
+from pydantic import BaseModel
 from ultralytics import YOLO
 from dependencies.authenticate import authenticate
 from tools.runModel import runModel
@@ -22,13 +23,26 @@ if not os.path.exists("backend/app/output"):
     print("Output directory created")
 
 
+class ImageData(BaseModel):
+    name: str
+
+
 @router.post("/upload")
 async def uploadImage(
-    file: UploadFile = File(...), user: tuple = Depends(authenticate)
+    imageData: ImageData,
+    file: UploadFile = File(...),
+    user: tuple = Depends(authenticate),
 ):
+    name = imageData.name
     connection = sqlite3.connect(dbPath)
     cursor = connection.cursor()
-    cursor.execute("INSERT INTO images (userId) VALUES (?)", (user[0],))
+    cursor.execute(
+        "INSERT INTO images (name, userId) VALUES (?, ?)",
+        (
+            name,
+            user[0],
+        ),
+    )
     imageId = cursor.lastrowid
     imageExtension = file.filename.split(".")[-1]
     imagePath = f"backend/app/upload/{user[0]}/{imageId}.{imageExtension}"
@@ -45,7 +59,7 @@ async def uploadImage(
     )
 
 
-@router.post("/detect")
+@router.post("/detect/{imageId}")
 async def detectImage(imageId: str, user: tuple = Depends(authenticate)):
     connection = sqlite3.connect(dbPath)
     cursor = connection.cursor()
@@ -53,18 +67,18 @@ async def detectImage(imageId: str, user: tuple = Depends(authenticate)):
     if not image:
         connection.close()
         return JSONResponse(status_code=404, content={"error": "Image not found"})
-    if image[1] != user[0]:
+    if image[2] != user[0]:
         connection.close()
         return JSONResponse(
             status_code=403, content={"error": "Not authorized to access this image"}
         )
-    if image[3]:
+    if image[4]:
         connection.close()
         return JSONResponse(
             status_code=200, content={"message": "Image already processed"}
         )
-    imagePath = image[2]
-    runModel(model, imagePath, str(image[1]))
+    imagePath = image[3]
+    runModel(model, imagePath, str(image[2]))
     outputPath = f"backend/app/output/{user[0]}/{imageId}.jpg"
     cursor.execute(
         "UPDATE images SET resultPath = ? WHERE id = ?", (outputPath, imageId)
@@ -82,15 +96,15 @@ async def getImage(imageId: str, user: tuple = Depends(authenticate)):
     connection.close()
     if not image:
         return JSONResponse(status_code=404, content={"error": "Image not found"})
-    if image[1] != user[0]:
+    if image[2] != user[0]:
         return JSONResponse(
             status_code=403, content={"error": "Not authorized to access this image"}
         )
-    if not image[2]:
+    if not image[3]:
         return JSONResponse(
             status_code=404, content={"error": "Image doesn't have path set"}
         )
-    return FileResponse(image[2])
+    return FileResponse(image[3])
 
 
 @router.get("/result/{imageId}")
@@ -101,15 +115,15 @@ async def getResult(imageId: str, user: tuple = Depends(authenticate)):
     connection.close()
     if not image:
         return JSONResponse(status_code=404, content={"error": "Image not found"})
-    if image[1] != user[0]:
+    if image[2] != user[0]:
         return JSONResponse(
             status_code=403, content={"error": "Not authorized to access this image"}
         )
-    if not image[3]:
+    if not image[4]:
         return JSONResponse(
             status_code=404, content={"error": "Image hasn't been processed yet"}
         )
-    return FileResponse(image[3])
+    return FileResponse(image[4])
 
 
 @router.get("/user-images")
@@ -120,5 +134,5 @@ async def userImages(user: tuple = Depends(authenticate)):
         "SELECT id FROM images WHERE userId = ?", (user[0],)
     ).fetchall()
     connection.close()
-    imageIds = [image[0] for image in images]
-    return JSONResponse(status_code=200, content={"imageIds": imageIds})
+    imagesData = [{"id": image[0], "name": image[1]} for image in images]
+    return JSONResponse(status_code=200, content={"images": imagesData})
