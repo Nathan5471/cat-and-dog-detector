@@ -83,6 +83,28 @@ async def detectImage(imageId: str, user: tuple = Depends(authenticate)):
     return JSONResponse(status_code=200, content={"message": "Success"})
 
 
+@router.get("/image-data/{imageId}")
+async def getImageData(imageId: str, user: tuple = Depends(authenticate)):
+    connection = sqlite3.connect(dbPath)
+    cursor = connection.cursor()
+    image = cursor.execute("SELECT * FROM images WHERE id = ?", (imageId,)).fetchone()
+    connection.close()
+    if not image:
+        return JSONResponse(status_code=404, content={"error": "Image not found"})
+    if image[2] != user[0]:
+        return JSONResponse(
+            status_code=403, content={"error": "Not authorized to access this image"}
+        )
+    return JSONResponse(
+        status_code=200,
+        content={
+            "message": "Image data loaded",
+            "imageId": imageId,
+            "imageName": image[1],
+        },
+    )
+
+
 @router.get("/image/{imageId}")
 async def getImage(imageId: str, user: tuple = Depends(authenticate)):
     connection = sqlite3.connect(dbPath)
@@ -131,3 +153,29 @@ async def userImages(user: tuple = Depends(authenticate)):
     connection.close()
     imagesData = [{"id": image[0], "name": image[1]} for image in images]
     return JSONResponse(status_code=200, content={"images": imagesData})
+
+
+@router.delete("/delete/{imageId}")
+async def deleteImage(imageId: str, user: tuple = Depends(authenticate)):
+    connection = sqlite3.connect(dbPath)
+    cursor = connection.cursor()
+    image = cursor.execute("SELECT * FROM images WHERE id = ?", (imageId,)).fetchone()
+    if not image:
+        connection.close()
+        return JSONResponse(status_code=404, content={"error": "Image not found"})
+    if image[2] != user[0]:
+        connection.close()
+        return JSONResponse(
+            status_code=403,
+            content={"error": "You are not authorized to delete this image"},
+        )
+    cursor.execute("DELETE FROM images WHERE id = ?", (imageId,))
+    connection.commit()
+    connection.close()
+    if image[3]:
+        os.remove(image[3])
+    if image[4]:
+        os.remove(image[4])
+    return JSONResponse(
+        status_code=200, content={"message": "Image deleted successfully"}
+    )

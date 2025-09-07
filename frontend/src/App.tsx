@@ -6,6 +6,7 @@ import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import Home from "./pages/Home.tsx";
 import UploadImage from "./pages/UploadImage.tsx";
+import Image from "./pages/Image.tsx";
 
 function App() {
   const { user, getUser } = useAuth();
@@ -22,6 +23,7 @@ function App() {
         <Route element={<AuthenticatedRoute />}>
           <Route path="/" element={<Home />} />
           <Route path="/upload" element={<UploadImage />} />
+          <Route path="/image/:imageId" element={<Image />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

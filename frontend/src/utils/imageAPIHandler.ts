@@ -25,7 +25,17 @@ export const detectImage = async (imageId: string) => {
   return response.data;
 };
 
+export const getImageData = async (imageId: string) => {
+  const response = await api.get(`/image-data/${imageId}`);
+  return response.data;
+};
+
 export const getUserImages = async () => {
   const response = await api.get("/user-images");
+  return response.data;
+};
+
+export const removeImage = async (imageId: string) => {
+  const response = await api.delete(`/delete/${imageId}`);
   return response.data;
 };
