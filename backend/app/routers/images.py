@@ -58,7 +58,7 @@ async def uploadImage(
 async def detectImage(imageId: str, user: tuple = Depends(authenticate)):
     connection = sqlite3.connect(dbPath)
     cursor = connection.cursor()
-    image = cursor.execute("SELECT * FROM images WHERE id = ?", (imageId)).fetchone()
+    image = cursor.execute("SELECT * FROM images WHERE id = ?", (imageId,)).fetchone()
     if not image:
         connection.close()
         return JSONResponse(status_code=404, content={"error": "Image not found"})
@@ -148,7 +148,7 @@ async def userImages(user: tuple = Depends(authenticate)):
     connection = sqlite3.connect(dbPath)
     cursor = connection.cursor()
     images = cursor.execute(
-        "SELECT id FROM images WHERE userId = ?", (user[0],)
+        "SELECT * FROM images WHERE userId = ?", (user[0],)
     ).fetchall()
     connection.close()
     imagesData = [{"id": image[0], "name": image[1]} for image in images]
