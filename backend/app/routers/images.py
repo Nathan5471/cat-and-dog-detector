@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends
+from fastapi import APIRouter, UploadFile, File, Form, Depends
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from ultralytics import YOLO
@@ -23,17 +23,12 @@ if not os.path.exists("backend/app/output"):
     print("Output directory created")
 
 
-class ImageData(BaseModel):
-    name: str
-
-
 @router.post("/upload")
 async def uploadImage(
-    imageData: ImageData,
+    name: str = Form(...),
     file: UploadFile = File(...),
     user: tuple = Depends(authenticate),
 ):
-    name = imageData.name
     connection = sqlite3.connect(dbPath)
     cursor = connection.cursor()
     cursor.execute(
@@ -55,7 +50,7 @@ async def uploadImage(
     connection.close()
     return JSONResponse(
         status_code=201,
-        content={"message": "Image uploaded successfully", "imagePath": imagePath},
+        content={"message": "Image uploaded successfully", "imageId": imageId},
     )
 
 

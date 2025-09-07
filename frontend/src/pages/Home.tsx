@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { getUserImages } from "../utils/imageAPIHandler";
+//import { Link } from "react-router-dom";
+// import { getUserImages } from "../utils/imageAPIHandler";
 import NavBar from "../components/NavBar";
 
 export default function Home() {
-  const [images, setImages] = useState([]);
+  // const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserImages = async () => {
       try {
-        const response = await getUserImages();
-        setImages(response.images);
+        // const response = await getUserImages();
+        // setImages(response.images);
       } catch (error) {
         console.error("Error fetching images:", error);
       } finally {
@@ -19,7 +19,7 @@ export default function Home() {
       }
     };
     fetchUserImages();
-  }, [setImages]);
+  }, []);
 
   if (loading) {
     return (
