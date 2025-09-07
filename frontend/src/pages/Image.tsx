@@ -14,6 +14,7 @@ export default function Image() {
   const [imageName, setImageName] = useState("");
   const [detect, setDetect] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     const fetchImageData = async () => {
@@ -26,6 +27,7 @@ export default function Image() {
         setImageUrl(`${window.location.origin}/api/images/image/${imageId}`);
       } catch (error) {
         console.error("Error fetching image data:", error);
+        setAccessDenied(true);
       } finally {
         setLoading(false);
       }
@@ -59,12 +61,41 @@ export default function Image() {
     navigate("/");
   };
 
+  const downloadImage = () => {
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = imageName;
+    link.click();
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col w-screen h-screen bg-gray-800 text-white">
         <NavBar />
         <div className="flex flex-col w-screen h-full items-center justify-center text-center">
           <p className="text-3xl">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="flex flex-col w-screen h-screen bg-gray-800 text-white">
+        <NavBar />
+        <div className="flex w-screen h-full items-center justify-center text-center">
+          <div className="flex flex-col w-80 h-70 bg-gray-700 rounded-lg justify-center items-center">
+            <h1 className="text-4xl m-1">STOP!</h1>
+            <p className="text-2xl">
+              This image either doesn't exist or you aren't allowed to view it.
+            </p>
+            <button
+              className="w-5/6 bg-gray-600 hover:bg-gray-500 rounded-lg p-2 mt-2"
+              onClick={() => navigate("/")}
+            >
+              Home
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -98,6 +129,12 @@ export default function Image() {
               Run Model
             </button>
           )}
+          <button
+            className="w-3/4 bg-gray-600 hover:bg-gray-500 rounded-lg p-3 mt-1 text-2xl"
+            onClick={() => downloadImage()}
+          >
+            Download
+          </button>
           <button
             className="w-3/4 bg-gray-600 hover:bg-gray-500 rounded-lg p-3 mt-1 text-2xl"
             onClick={handleRemoveImage}
