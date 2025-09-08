@@ -5,7 +5,7 @@ RUN npm install
 COPY frontend/ ./
 RUN npm run build
 
-FROM python:3.13
+FROM python:3.13-slim AS backend
 WORKDIR /
 COPY --from=frontend /frontend/dist ./frontend/dist
 COPY backend/ ./backend
