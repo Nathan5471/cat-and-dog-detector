@@ -6,4 +6,8 @@ Cat and Dog Detector is a website that allows you to upload images and run them 
 
 ## Technologies
 
-The frontend is made using a Vite React app with TypeScript and TailwindCSS. The backend is made using FastAPI and it is accessed by the frontend using Axios. For the Database, SQlite was used and images are just stored as files. The model is a YOLO model using Ultralytics, for more information see ADD MY GITHUB REPO LINK.
+The frontend is made using a Vite React app with TypeScript and TailwindCSS. The backend is made using FastAPI and it is accessed by the frontend using Axios. For the Database, SQlite was used and images are just stored as files. The model is a YOLO model using Ultralytics, for more information see <https://github.com/Nathan5471/Python-Class-Project>.
+
+## Self-host
+
+You can self host this with Docker! Just use the docker-compose.yaml and fill in the environment variable, then run docker-compose up -d and it will be available at {yourIP}:8000

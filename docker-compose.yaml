@@ -1,0 +1,9 @@
+services:
+  cat-and-dog-detector:
+    image: nathan5471/cat-and-dog-detector:latest
+    container_name: cat-and-dog-detector
+    ports:
+      - "8000:8000"
+    environemtn:
+      - JWT_SECRET=your_jwt_secret
+    restart: unless-stopped
