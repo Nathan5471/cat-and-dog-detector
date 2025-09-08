@@ -10,6 +10,7 @@ WORKDIR /
 COPY --from=frontend /frontend/dist ./frontend/dist
 COPY backend/ ./backend
 COPY backend/requirements.txt ./backend/requirements.txt
+RUN apt-get update && apt-get install -y libgl1
 RUN pip install -r backend/requirements.txt
 
 EXPOSE 8000
