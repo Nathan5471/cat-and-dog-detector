@@ -6,7 +6,11 @@ from tools.setupDb import setupDatabase
 from routers import images, users
 import os
 
-load_dotenv(dotenv_path="backend/.env")
+try:
+    load_dotenv(dotenv_path="backend/.env")
+except Exception as e:
+    print("Error loading .env file:", e)
+    print("This is fine if you are using docker")
 
 setupDatabase()
 
